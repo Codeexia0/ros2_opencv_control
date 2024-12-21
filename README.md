@@ -67,4 +67,6 @@ This project demonstrates a ROS2-based robot control system using a TurtleBot si
 
 Click the image above to watch the demonstration video: **"ArUco Marker Robot Control with ROS2"**.
 
-
+## Authors
+- [Emin Shirinov](https://www.github.com/Codeexia0)
+- [George Punnoose](https://www.github.com/George-P-1)
