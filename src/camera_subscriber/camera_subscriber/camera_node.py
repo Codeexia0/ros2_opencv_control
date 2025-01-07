@@ -68,22 +68,39 @@ class CameraNode(Node):
 
                     # Calculate the vertical position of the marker's center (y-coordinate)
                     marker_center_y = marker_center[1]
+                    # Calculate the horizontal position of the marker's center (x-coordinate)
+                    marker_center_x = marker_center[0]
 
-                    # Calculate the vertical center of the image
+                    # Calculate the vertical and horizontal centers of the image
                     image_center_y = height / 2
+                    image_center_x = width / 2
 
                     # Move the robot based on the marker's position
+                    linear_velocity = 0.0
+                    angular_velocity = 0.0
+
+                    # Vertical movement (forward or backward)
                     if marker_center_y < image_center_y - 10:  # Marker is above the center
-                        command = self.create_twist_command(0.5, 0.0)  # Move forward
+                        linear_velocity = 0.5  # Move forward
                         self.get_logger().info(f"Marker at {marker_id} is above center. Moving forward.")
                     elif marker_center_y > image_center_y + 10:  # Marker is below the center
-                        command = self.create_twist_command(-0.5, 0.0)  # Move backward
+                        linear_velocity = -0.5  # Move backward
                         self.get_logger().info(f"Marker at {marker_id} is below center. Moving backward.")
                     else:
-                        command = self.create_twist_command(0.0, 0.0)  # No movement if marker is near the center
-                        self.get_logger().info(f"Marker at {marker_id} is at the center. No movement.")
+                        self.get_logger().info(f"Marker at {marker_id} is near vertical center. No vertical movement.")
 
-                    # Publish the command
+                    # Horizontal movement (rotation)
+                    if marker_center_x < image_center_x - 10:  # Marker is to the left of center
+                        angular_velocity = 0.5  # Rotate clockwise
+                        self.get_logger().info(f"Marker at {marker_id} is left of center. Rotating clockwise.")
+                    elif marker_center_x > image_center_x + 10:  # Marker is to the right of center
+                        angular_velocity = -0.5  # Rotate counterclockwise
+                        self.get_logger().info(f"Marker at {marker_id} is right of center. Rotating counterclockwise.")
+                    else:
+                        self.get_logger().info(f"Marker at {marker_id} is near horizontal center. No rotation.")
+
+                    # Publish the twist command with both linear and angular velocities
+                    command = self.create_twist_command(linear_velocity, angular_velocity)
                     self.cmd_publisher.publish(command)
 
             # Display the image with detected markers
